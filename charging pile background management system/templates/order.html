@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="../static/adminLet/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container-fluid">
+        <div class="row mb-2">
+              <div class="col-sm-6">
+                <h3 class="m-0 text-blue">订单管理</h3>
+              </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div>
+{% endblock %}
+
+{% block content %}
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="example" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                  <th>订单合约地址</th>
+                  <th>充电桩DMID</th>
+                  <th>电动汽车DMID</th>
+                  <th>订单创建时间</th>
+                  <th>订单结束时间</th>
+                  <th>订单状态</th>
+                  <th>充电电量(度)</th>
+                  <th>订单应收金额</th>
+                  <th>订单实收金额</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                  <td>0x0dcd2f752394...</td>
+                  <td>0x0dcd2f752394...</td>
+                  <td>0x53daf2471a52...</td>
+                  <td>2020-1-1 15:00</td>
+                  <td>2020-1-1 16:00</td>
+                  <td>正常</td>
+                  <td>10</td>
+                  <td>10 ETH</td>
+                  <td>10 ETH</td>
+                </tr>
+                <tr>
+                  <td>0x7618ab3c90e1...</td>
+                  <td>0x0dcd2f752394...</td>
+                  <td>0x53daf2471a52...</td>
+                  <td>2020-1-1 16:00</td>
+                  <td>2020-1-1 17:00</td>
+                  <td>正常</td>
+                  <td>10</td>
+                  <td>10 ETH</td>
+                  <td>10 ETH</td>
+                </tr>
+                <tr>
+                  <td>0xa5239cf25a89...</td>
+                  <td>0x0dcd2f752394...</td>
+                  <td>0x53daf2471a52...</td>
+                  <td>2020-1-1 17:00</td>
+                  <td>2020-1-1 18:00</td>
+                  <td>正常</td>
+                  <td>10</td>
+                  <td>10 ETH</td>
+                  <td>10 ETH</td>
+                </tr>
+
+                </tbody>
+                <tfoot>
+                <tr>
+                  <th>订单合约地址</th>
+                  <th>充电桩DMID</th>
+                  <th>电动汽车DMID</th>
+                  <th>订单创建时间</th>
+                  <th>订单结束时间</th>
+                  <th>订单状态</th>
+                  <th>充电电量(度)</th>
+                  <th>订单应收金额</th>
+                  <th>订单实收金额</th>
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+      </div>
+{% endblock %}
+
+{% block script %}
+    <script src="../static/adminLet/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="../static/adminLet/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="../static/adminLet/dist/js/demo.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function() {
+			$("#example").DataTable();
+
+			$('#example tbody').on('click', 'td', function () {
+                alert( table.cell( this ).data() );
+			} );
+
+		} );
+    </script>
+{% endblock %}

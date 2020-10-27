@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="../static/adminLet/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=UoRGlk4GMKH0krecuB6vKdtaO7WYjCOh"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container-fluid">
+        <div class="row mb-2">
+              <div class="col-sm-6">
+                <h3 class="m-0 text-blue">充电桩管理</h3>
+              </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div>
+{% endblock %}
+
+{% block content %}
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="example" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                  <th>DMID</th>
+                  <th>站点名称</th>
+                  <th>安装时间</th>
+                  <th>品牌</th>
+                  <th>类型</th>
+                  <th>枪数</th>
+                  <th>额定功率</th>
+                  <th>版本</th>
+                  <th>状态</th>
+                  <th>充电记录</th>
+                  <th>地理位置</th>
+                </tr>
+                </thead>
+
+                <tfoot>
+                <tr>
+                  <th>DMID</th>
+                  <th>站点名称</th>
+                  <th>安装时间</th>
+                  <th>品牌</th>
+                  <th>类型</th>
+                  <th>枪数</th>
+                  <th>额定功率</th>
+                  <th>版本</th>
+                  <th>状态</th>
+                  <th>充电记录</th>
+                  <th>地理位置</th>
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+      </div>
+
+      <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">充电桩地理位置</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body baidu-maps" id="allmap" style="height:400px">
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+
+{% endblock %}
+
+{% block script %}
+    <script src="../static/adminLet/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="../static/adminLet/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="../static/adminLet/dist/js/demo.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function() {
+		     $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' }
+            });
+			var table = $("#example").DataTable({
+                "ajax": {
+                    "processing": true,
+                    "url":"{% url 'cpData' %}",
+                    "type": 'POST',
+                    "dataSrc":"data",
+                },
+
+                "columns": [
+                    { "data": "DMID","render":function(data, type, row){if(data.length>20){return "<span title='"+data+"'>"+ data.substr(0, 14) + "...</span>"}else{return data}}},
+                    { "data": "name" },
+                    { "data": "installTime" },
+                    { "data": "brand" },
+                    { "data": "category" },
+                    { "data": "gunNumber" },
+                    { "data": "ratedPower"},
+                    { "data": "version"},
+                    { "data": "state"},
+                    { "data": "chargingRecord","render":function(data, type, row) { return '<button type="button" class="btn btn-info">'+data+'</button>'}},
+                    { "data": "location","render":function(data, type, row) { return '<button type="button" class="btn btn-info">'+data+'</button>'}}
+                ]
+            });
+
+ 			$('#example tbody').on('click', 'tr', function () {
+				var data = table.row( this ).data();
+				$('#myModal').modal({
+				  show: true
+				})
+			} );
+
+		} );
+
+
+		$('#myModal').on('shown.bs.modal', function (e) {
+
+					var x = 121.43709444444444;
+					var y = 31.027927777777776;
+					var ggPoint = new BMap.Point(x,y);
+
+                	var map = new BMap.Map("allmap");    // 创建Map实例
+
+					translateCallback = function (data){
+					  if(data.status === 0) {
+					    map.centerAndZoom(data.points[0],17);
+						var marker = new BMap.Marker(data.points[0]);
+						map.addOverlay(marker);
+						var label = new BMap.Label("The Charging Pile Location",{offset:new BMap.Size(20,-10)});
+						marker.setLabel(label); //添加百度label
+						<!-- map.setCenter(data.points[0]); -->
+					  }
+					}
+
+					var convertor = new BMap.Convertor();
+					var pointArr = [];
+					pointArr.push(ggPoint);
+					convertor.translate(pointArr, 1, 5, translateCallback);
+
+
+					//添加地图类型控件
+					map.addControl(new BMap.MapTypeControl({
+					mapTypes:[
+						BMAP_NORMAL_MAP,
+						BMAP_HYBRID_MAP
+					]}));
+					map.setCurrentCity("江苏");          // 设置地图显示的城市 此项是必须设置的
+					map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+            });
+    </script>
+{% endblock %}
+
+
